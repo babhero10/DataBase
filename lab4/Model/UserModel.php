@@ -1,11 +1,12 @@
 <?php
     require("Model.php");
-    class User
+    class User implements ModelData
     {
         private $id;
-        private $name;
         private $email;
+        private $name;
         private $password;
+        private $timestamp;
 
         function __construct($name, $email, $password) {
             $this->setName( $name );
@@ -15,6 +16,10 @@
         
         public function getId() {
             return $this->id;
+        }
+
+        public function getTimestamp() {   
+            return $this->timestamp;
         }
 
         public function getName() {
@@ -33,13 +38,53 @@
             $this->email = $email;
         }
 
+        public function getPassword() {
+            return $this->password;
+        }
+
         public function setPassword($password) {
 
-            $this->password = md5($password);
+            $this->password = ($password);
+        }
+        public function print()
+        {
+            echo"ID: ". $this->getId() ."/Email: ". $this->getEmail() ."/Name: ". $this->getName() ."/Password: ". $this->getPassword() . "/Time: ". $this->getTimestamp() ."";
+            echo"<br/>";
+        }
+
+        public static function row_to_model($row)
+        {
+            if ($row == null)
+            {
+                return null;
+            }
+
+            $model = new User($row["name"],$row["email"], $row["password"]);
+            $model->id = $row['user_id'];
+            $model->timestamp = $row['registration_date'];
+            return $model;
+        }
+        
+        public static function rows_to_model($rows)
+        {  
+            if ($rows == null)
+            {
+                return [];
+            }
+
+            $models = array_fill(0, count($rows), null);
+            $i = 0;
+
+            foreach ($rows as $row) {
+                $models[$i] = User::row_to_model($row);
+                $i++;
+            }
+
+            return $models;
         }
     }
 
-    class UserModel implements Model {
+    class UserModel implements ModelDB {
 
         private $db;
 
@@ -51,13 +96,21 @@
         public function getRows()
         {
             $query = "SELECT * FROM user";
-            $stmt = $this->db->query($query);
-            return $stmt->fetchAll();
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $models = User::rows_to_model($rows);
+            return $models;
         }
 
-        public function getById($model_id): Model
+        public function getById($model_id)
         {
-            return $this;
+            $query = "SELECT * FROM user WHERE user_id=:user_id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":user_id", $model_id, PDO::PARAM_INT);
+            $rows = $stmt->fetchAll();
+            $models = User::rows_to_model($rows);
+            return $models;
         }
         
         public function getRowById($model_id)
@@ -74,5 +127,7 @@
         {
 
         }
+
+        
     }
 ?>
