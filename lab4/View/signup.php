@@ -13,7 +13,7 @@
             <input type="password" name="password" class="password" placeholder="Password">
             <input type="password" name="rePassword" class="re-password" placeholder="re-password">
             <input type="submit" value="Login">
-            <p> Already have an account? <a href="login.html">Log in</a></p>
+            <p> Already have an account? <a href="login.php">Log in</a></p>
         </form>
     </div>
 </body>

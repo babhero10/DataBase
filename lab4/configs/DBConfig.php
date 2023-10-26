@@ -1,10 +1,10 @@
 <?php
     // Ensures that users do not directly access the controller class.
-    // if (!defined('BASEPATH')) 
-    // {
-    //     header('http://localhost/collage/lab4/view/index.php',true,403);
-    //     exit();         
-    // } 
+    if (!defined('BASEPATH')) 
+    {
+        header('Location: ../View/index.php',true);
+        exit();         
+    } 
 
     // Database configuration
     define('DB_HOST', 'localhost');

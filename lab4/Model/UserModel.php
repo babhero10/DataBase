@@ -1,5 +1,11 @@
 <?php
     require("Model.php");
+    define('USER_ID', 'user_id');
+    define('USER_EMAIL', 'email');
+    define('USER_USERNAME', 'name');
+    define('USER_PASSWORD', 'password');
+    define('USER_REG_DATE', 'registration_date');
+
     class User implements ModelData
     {
         private $id;
@@ -59,9 +65,9 @@
                 return null;
             }
 
-            $model = new User($row["name"],$row["email"], $row["password"]);
-            $model->id = $row['user_id'];
-            $model->timestamp = $row['registration_date'];
+            $model = new User($row[USER_USERNAME],$row[USER_EMAIL], $row[USER_PASSWORD]);
+            $model->id = $row[USER_ID];
+            $model->timestamp = $row[USER_REG_DATE];
             return $model;
         }
         
@@ -103,31 +109,36 @@
             return $models;
         }
 
-        public function getById($model_id)
+        public function getRowById($model_id)
         {
-            $query = "SELECT * FROM user WHERE user_id=:user_id";
+            $query = "SELECT * FROM user WHERE :user_id_column=:user_id";
             $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":user_id_column", USER_ID, PDO::PARAM_INT);
             $stmt->bindParam(":user_id", $model_id, PDO::PARAM_INT);
             $rows = $stmt->fetchAll();
             $models = User::rows_to_model($rows);
             return $models;
         }
-        
-        public function getRowById($model_id)
+
+        public function getRowByColumnValue($columnName, $value)
         {
-            
+            $query = "SELECT * FROM user WHERE :columnName=:columnValue";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(":columnName", $columnName, PDO::PARAM_STR);
+            $stmt->bindParam(":columnValue", $value, PDO::PARAM_STR);
+            $rows = $stmt->fetchAll();
+            $models = User::rows_to_model($rows);
+            return $models;
         }
 
-        public function updateRow($model_id)
+        public function updateRowById($model_id)
         {
 
         }
 
-        public function deleteRow($id)
+        public function deleteRowById($model_id)
         {
 
         }
-
-        
     }
 ?>

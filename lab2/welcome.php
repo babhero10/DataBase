@@ -9,7 +9,9 @@
 <body>
     <h1>Welcome
         <?php
+        if(isset($_POST["name"])) {
             echo $_POST['name'];
+        }
         ?>
     </h1>
 </body>
