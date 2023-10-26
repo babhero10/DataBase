@@ -6,6 +6,6 @@
     <title>Home</title>
 </head>
 <body>
-    <p>Welcome <span id="username"></span></p>
+    <p>Welcome <span id="username"><?php $name ?></span></p>
 </body>
 </html>
