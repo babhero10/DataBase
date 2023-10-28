@@ -7,8 +7,9 @@
     interface ModelDB {
         public function getRows();
         public function getRowById($model_id);
-        public function getRowByColumnValue($columnName, $value);
-        public function updateRowById($model);
+        public function getRowsByColumnValue($columnName, $value);
+        public function insertRow($model);
+        public function updateRowById($model, $new_model);
         public function deleteRowById($model_id);
     }
 ?>

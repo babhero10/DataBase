@@ -47,6 +47,12 @@
         public function getPassword() {
             return $this->password;
         }
+        public function getHashPassword() {
+            return md5($this->password);
+        }
+        public function hashPassword($password) {
+            return md5($password);
+        }
 
         public function setPassword($password) {
 
@@ -101,37 +107,68 @@
         
         public function getRows()
         {
-            $query = "SELECT * FROM user";
-            $stmt = $this->db->prepare($query);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $models = User::rows_to_model($rows);
-            return $models;
+            try {
+                $query = "SELECT * FROM user";
+                $stmt = $this->db->prepare($query);
+                $stmt->execute();
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $models = User::rows_to_model($rows);
+                return $models;
+            } catch (PDOException $e) {
+                return null;
+            }
         }
 
         public function getRowById($model_id)
         {
-            $query = "SELECT * FROM user WHERE :user_id_column=:user_id";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(":user_id_column", USER_ID, PDO::PARAM_INT);
-            $stmt->bindParam(":user_id", $model_id, PDO::PARAM_INT);
-            $rows = $stmt->fetchAll();
-            $models = User::rows_to_model($rows);
-            return $models;
+            try {
+                $query = "SELECT * FROM `user` WHERE :user_id_column=:user_id";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(":user_id_column", USER_ID, PDO::PARAM_INT);
+                $stmt->bindParam(":user_id", $model_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $rows = $stmt->fetchAll();
+                $models = User::rows_to_model($rows);
+                return $models;
+            } catch (PDOException $e) {
+                return null;
+            }
         }
 
-        public function getRowByColumnValue($columnName, $value)
+        public function getRowsByColumnValue($columnName, $value)
         {
-            $query = "SELECT * FROM user WHERE :columnName=:columnValue";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(":columnName", $columnName, PDO::PARAM_STR);
-            $stmt->bindParam(":columnValue", $value, PDO::PARAM_STR);
-            $rows = $stmt->fetchAll();
-            $models = User::rows_to_model($rows);
-            return $models;
+            try {
+                $query = "SELECT * FROM `user` WHERE $columnName=:columnValue;";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(":columnValue", $value, PDO::PARAM_STR);
+                $stmt->execute();
+                $rows = $stmt->fetchAll();
+                $models = User::rows_to_model($rows);
+                return $models;
+            } catch (PDOException $e) {
+                return null;
+            }
         }
 
-        public function updateRowById($model_id)
+        public function insertRow($model)
+        {
+            $name = $model->getName();
+            $email = $model->getEmail();
+            $password = $model->getPassword();
+            try {
+                $query = "INSERT INTO `user`(`email`, `name`, `password`) VALUES (:emailParm,:nameParm,:passwordParm)";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(":emailParm", $email, PDO::PARAM_STR);
+                $stmt->bindParam(":nameParm", $name, PDO::PARAM_STR);
+                $stmt->bindParam(":passwordParm", $password, PDO::PARAM_STR);
+                $stmt->execute();  
+                return true;
+            } catch (PDOException $e) {
+                return false;
+            }
+        }
+
+        public function updateRowById($model_id, $new_model)
         {
 
         }

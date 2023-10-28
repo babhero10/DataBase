@@ -2,7 +2,6 @@
     require("../configs/DBConfig.php");
     function getDatabaseConnection()
     {
-        
         $dsn = "mysql:host=" . DB_HOST . ";dbname=registration";
    
         try {
